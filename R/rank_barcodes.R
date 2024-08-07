@@ -131,7 +131,7 @@ rank_barcodes = function(counts, type = "UMI", psi.min = 2, psi.max = 5, alpha =
   
   ## output a plot of ranks if requested
   if (plot){
-    if(!is.null(imageFile)) png(UMIRankPlot, width = 2400, height = 2400, res = 300)
+    if(!is.null(UMIRankPlot)) png(UMIRankPlot, width = 2400, height = 2400, res = 300)
     plot(y=unique.counts$counts, x=unique.counts$rank, xlab="log Rank", ylab=paste("log ", feature_type, sep=""), pch=16, las=1, col="#CDCDCD20")
     lines(y=c(0,lower),x=c(lower_rank, lower_rank), col = "red")
     lines(y=c(lower,lower),x=c(0, lower_rank), col = "red")
