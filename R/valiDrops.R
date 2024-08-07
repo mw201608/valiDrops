@@ -56,7 +56,7 @@ valiDrops = function(counts, rank_barcodes = TRUE, mitochondrial_clusters = 3, r
   
   ## convert the counts into dgCMatrix if its a dense matrix
   if(class(counts) == "matrix") { 
-    counts = as(counts, "dgCMatrix")
+    counts = as(counts, "CsparseMatrix")
   }
 
   ## Check for column and rownames
@@ -100,7 +100,7 @@ valiDrops = function(counts, rank_barcodes = TRUE, mitochondrial_clusters = 3, r
     if (status) { message("Step 4: Collecting expression-based metrics.")}
     counts.subset.filtered <- counts.subset[ rownames(counts.subset) %in% metrics$protein_coding, colnames(counts.subset) %in% qc.pass$final]
     if(class(counts.subset.filtered) != "dgCMatrix") { 
-      counts.subset.filtered = as(counts.subset.filtered, "dgCMatrix")
+      counts.subset.filtered = as(counts.subset.filtered, "CsparseMatrix")
     }
 
     ## Run expression_matrix
