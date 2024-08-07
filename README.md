@@ -8,7 +8,7 @@ valiDrops can be installed directly from GitHub using either {[devtools](https:/
 
 ```{r}
 install.packages("remotes")
-remotes::install_github("madsen-lab/valiDrops")
+remotes::install_github("mw201608/valiDrops")
 remotes::install_github("immunogenomics/presto")
 ```
 
