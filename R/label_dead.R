@@ -30,6 +30,7 @@
 #' @param max.live The maximum number of live barcodes to use for training [default = 500].
 #' @param plot A boolean (TRUE or FALSE) indicating whether or not to plot the scoring threshold [default = TRUE].
 #' @param bpparam The backend to use for processing. Set to MulticoreParam() or SnowParam() for parallel processing [default = SeriamParam()].
+#' @param labelDeadCellPlot A string to specify the file name of the output PNG image.
 #'
 #' @return A data frame object that contains the quality metrics of the data and results indicating the apoptotic cells.
 #' @export
@@ -40,7 +41,7 @@
 #' @import BiocParallel
 #' @import inflection
 #' 
-label_dead <- function(counts, metrics, qc.labels, cor.threshold = NULL, train = TRUE, rep = 10, n.min = 8, n.relabel = 1, feature.try = 3, verbose = FALSE, label.thrs = NULL, label.frac = 0.1, nfeats = 2000, alpha = 0, npcs = 100, weight = TRUE, epochs = 20, nfolds = 5, nrep = 10, fail.weight = 0.2, cor.min = 0.0001, cor.max = 0.005, cor.steps = 50, nrep.cor = 10, min.dead = 100, max.live = 500, plot = TRUE, bpparam = SerialParam()) {
+label_dead <- function(counts, metrics, qc.labels, cor.threshold = NULL, train = TRUE, rep = 10, n.min = 8, n.relabel = 1, feature.try = 3, verbose = FALSE, label.thrs = NULL, label.frac = 0.1, nfeats = 2000, alpha = 0, npcs = 100, weight = TRUE, epochs = 20, nfolds = 5, nrep = 10, fail.weight = 0.2, cor.min = 0.0001, cor.max = 0.005, cor.steps = 50, nrep.cor = 10, min.dead = 100, max.live = 500, plot = TRUE, bpparam = SerialParam(), labelDeadCellPlot = NULL) {
   # Soft label the dataset
   metrics$logUMIs <- scale(metrics$logUMIs, scale = FALSE)
   metrics$logFeatures <- scale(metrics$logFeatures, scale = FALSE)
@@ -144,8 +145,10 @@ label_dead <- function(counts, metrics, qc.labels, cor.threshold = NULL, train =
   
   # Plot if requested
   if (plot) {
+  if(!is.null(labelDeadCellPlot)) png(labelDeadCellPlot, width = 2400, height = 2400, res = 300)
 	plot(sort(metrics$score), las = 1, ylab="Score", xlab="Rank", pch = 16)
 	abline(h = label.thrs, col="red", lty=2)
+  if(!is.null(labelDeadCellPlot)) dev.off()
   }
   
   # Define objects
