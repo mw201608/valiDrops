@@ -14,6 +14,11 @@
 #' @param coding.threshold The maximum number of standard deviations around the mean that passes the QC [default = 5].
 #' @param contrast.threshold The maximum number of standard deviations around the mean that passes the QC [default = 5].
 #' @param plot A boolean (TRUE or FALSE) indicating whether or not to produce plots [default = TRUE].
+#' @param qcMitoPlot A string specifying file name of a PNG output.
+#' @param qcUMIFeaturePlot A string specifying file name of a PNG output.
+#' @param qcCodingFracPlot A string specifying file name of a PNG output.
+#' @param qcContrastFracPlot A string specifying file name of a PNG output.
+#' 
 #'
 #' @return A list of vectors containing the mitochondrial threshold, number of barcodes filtered at each step and the final barcodes that pass QC filtering.
 #' @export
@@ -23,7 +28,8 @@
 #' @import robustbase
 #' @import segmented
 
-quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, contrast = FALSE, mito.nreps = 10, mito.max = 0.3, npsi = 3, dist.threshold = 5, coding.threshold = 3, contrast.threshold = 3, plot = TRUE) {
+quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, contrast = FALSE, mito.nreps = 10, mito.max = 0.3, npsi = 3, dist.threshold = 5, coding.threshold = 3, contrast.threshold = 3, plot = TRUE,
+  qcMitoPlot = NULL, qcUMIFeaturePlot = NULL, qcCodingFracPlot = NULL, qcContrastFracPlot = NULL) {
   ## evaluate arguments
   # metrics matrix
   if(missing(metrics)) { stop('No metrics data frame was provided', call. = FALSE) }
@@ -106,10 +112,12 @@ quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, 
   
       # Plot
       if (plot) {
+        if(!is.null(qcMitoPlot)) png(qcMitoPlot, width = 2400, height = 2400, res = 300)
         plot(y=metrics$mitochondrial_fraction, x=metrics$logFeatures, pch=16, xlab="log Total features", ylab="Mitochondrial fraction", col = ifelse(metrics$mitochondrial_fraction > mito.threshold, "red","black"), las=1)
         abline(h = mito.threshold)
         mtext(paste("Threshold = ", mito.threshold))
         mtext(paste("Kept ", length(qc.pass), " barcodes",sep=""), line = 1)
+        if(!is.null(qcMitoPlot)) dev.off()
       }
     
     # Filter the metrics internally
@@ -124,11 +132,11 @@ quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, 
       # Segmented model
       model <- lm(logFeatures ~ logUMIs, data = metrics)
       while (floor(npsi) >= 1) {
-	out <- suppressWarnings(segmented::segmented(model, npsi = floor(npsi)))
-	if (class(out)[1] == "segmented") {
-	  break
-	} else {
+	out <- try(segmented::segmented(model, npsi = floor(npsi)), silent = TRUE)
+	if (inherits(out, "try-error")) {
 	  npsi <- floor(npsi) - 1
+	} else {
+	  break
 	}
       }
   
@@ -141,6 +149,7 @@ quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, 
   
       # Plot it
       if (plot) {
+        if(!is.null(qcUMIFeaturePlot)) png(qcUMIFeaturePlot, width = 2400, height = 2400, res = 300)
         plot(y = metrics$logFeatures, x = metrics$logUMIs, pch=16, las=1, xlab="Total UMIs", ylab="Total features", col = ifelse(metrics$barcode %in% qc.pass, "grey","red"))
         if (class(out)[1] == "segmented") {
 	      plot(out, add = TRUE, lwd = 4, col = "blue", rug = FALSE)
@@ -148,6 +157,7 @@ quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, 
 		abline(out, lwd=4, col="blue")
 	}
         mtext(paste("Kept ", length(qc.pass), " barcodes",sep=""))
+        if(!is.null(qcUMIFeaturePlot)) dev.off()
       }
     
       # Save and filter
@@ -169,10 +179,12 @@ quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, 
     
       # Plot it
       if (plot) {
+        if(!is.null(qcCodingFracPlot)) png(qcCodingFracPlot, width = 2400, height = 2400, res = 300)
         hist(metrics$coding_fraction, breaks = "fd", las = 1, xlab="Fraction of UMIs from protein-coding genes", main = "")
         if (lower.threshold > 0 & lower.threshold < 1) { abline(v = lower.threshold, col ="red", lty=2) } 
         if (upper.threshold > 0 & upper.threshold < 1) { abline(v = upper.threshold, col ="red", lty=2) } 
         mtext(paste("Kept ", length(qc.pass), " barcodes",sep=""))
+        if(!is.null(qcCodingFracPlot)) dev.off()
       }
     
       # Save and filter
@@ -194,10 +206,12 @@ quality_filter = function(metrics, mito = TRUE, distance = TRUE, coding = TRUE, 
     
       # Plot it
       if (plot) {
+        if(!is.null(qcContrastFracPlot)) png(qcContrastFracPlot, width = 2400, height = 2400, res = 300)
         hist(metrics$contrast_fraction, breaks = "fd", las = 1, xlab="Contrast fraction", main = "")
         if (lower.threshold > 0 & lower.threshold < 1) { abline(v = lower.threshold, col ="red", lty=2) } 
         if (upper.threshold > 0 & upper.threshold < 1) { abline(v = upper.threshold, col ="red", lty=2) } 
         mtext(paste("Kept ", length(qc.pass), " barcodes",sep=""))
+        if(!is.null(qcContrastFracPlot)) dev.off()
       }
     
       # Save and filter
