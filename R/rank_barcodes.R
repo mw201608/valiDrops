@@ -11,7 +11,8 @@
 #' @param boot A number indicating the number of bootstrap replicates used to infer breakpoints [default = 10]. Maybe necessary to increase if setting psi.max to a large number.
 #' @param factor A number indicating the number of folds above the error of the best model is allowed [default = 1.5]. See details for more information.
 #' @param threshold A boolean (TRUE or FALSE), which indicates if the threshold to be included in the output [default = TRUE]
-#' @param plot A boolean (TRUE or FALSE), which indicates if a plot should be returned [default = TRUE]
+#' @param plot A boolean (TRUE or FALSE), which indicates if a plot should be shown or saved in a file specified by imageFile [default = TRUE]
+#' @param imageFile A string specifying the file name of a PNG image.
 #'
 #' @details
 #' \strong{Choosing the type of feature to use for ranking of barcodes}\cr
@@ -28,7 +29,7 @@
 #' @import zoo
 #' @import Matrix
 
-rank_barcodes = function(counts, type = "UMI", psi.min = 2, psi.max = 5, alpha = 0.001, alpha.max = 0.05, boot = 10, factor = 1.5, threshold = TRUE, plot = TRUE) {
+rank_barcodes = function(counts, type = "UMI", psi.min = 2, psi.max = 5, alpha = 0.001, alpha.max = 0.05, boot = 10, factor = 1.5, threshold = TRUE, plot = TRUE, imageFile = NULL) {
   ## evaluate arguments
   # count matrix
   if(missing(counts)) {
@@ -130,12 +131,14 @@ rank_barcodes = function(counts, type = "UMI", psi.min = 2, psi.max = 5, alpha =
   
   ## output a plot of ranks if requested
   if (plot){
+    if(!is.null(imageFile)) png(imageFile, width = 2400, height = 2400, res = 300)
     plot(y=unique.counts$counts, x=unique.counts$rank, xlab="log Rank", ylab=paste("log ", feature_type, sep=""), pch=16, las=1, col="#CDCDCD20")
     lines(y=c(0,lower),x=c(lower_rank, lower_rank), col = "red")
     lines(y=c(lower,lower),x=c(0, lower_rank), col = "red")
     abline(v = quantile(x, prob = alpha))
     abline(v = quantile(x, prob = (1-alpha)))
     legend("topright", box.lty=0, legend = as.expression(bquote("n"^"Lower" ~ " = " ~ .(nrow(bcranks[ bcranks$counts >= exp(lower),])))))
+    if(!is.null(imageFile)) dev.off()
   }
   
   ## finalize results depending on arguments
