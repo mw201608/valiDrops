@@ -16,7 +16,11 @@ quality_filter(
   dist.threshold = 5,
   coding.threshold = 3,
   contrast.threshold = 3,
-  plot = TRUE
+  plot = TRUE,
+  qcMitoPlot = NULL,
+  qcUMIFeaturePlot = NULL,
+  qcCodingFracPlot = NULL,
+  qcContrastFracPlot = NULL
 )
 }
 \arguments{
@@ -41,6 +45,14 @@ quality_filter(
 \item{contrast.threshold}{The maximum number of standard deviations around the mean that passes the QC [default = 5].}
 
 \item{plot}{A boolean (TRUE or FALSE) indicating whether or not to produce plots [default = TRUE].}
+
+\item{qcMitoPlot}{A string specifying file name of a PNG output.}
+
+\item{qcUMIFeaturePlot}{A string specifying file name of a PNG output.}
+
+\item{qcCodingFracPlot}{A string specifying file name of a PNG output.}
+
+\item{qcContrastFracPlot}{A string specifying file name of a PNG output.}
 
 \item{dist.thres}{The maximum number of standard deviations below the mean that passes the QC [default = 5].}
 }
