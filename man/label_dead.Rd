@@ -32,7 +32,8 @@ label_dead(
   min.dead = 100,
   max.live = 500,
   plot = TRUE,
-  bpparam = SerialParam()
+  bpparam = SerialParam(),
+  labelDeadCellPlot = NULL
 )
 }
 \arguments{
@@ -91,6 +92,8 @@ label_dead(
 \item{plot}{A boolean (TRUE or FALSE) indicating whether or not to plot the scoring threshold [default = TRUE].}
 
 \item{bpparam}{The backend to use for processing. Set to MulticoreParam() or SnowParam() for parallel processing [default = SeriamParam()].}
+
+\item{labelDeadCellPlot}{A string to specify the file name of the output PNG image.}
 }
 \value{
 A data frame object that contains the quality metrics of the data and results indicating the apoptotic cells.
