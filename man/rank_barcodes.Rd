@@ -14,7 +14,8 @@ rank_barcodes(
   boot = 10,
   factor = 1.5,
   threshold = TRUE,
-  plot = TRUE
+  plot = TRUE,
+  UMIRankPlot = NULL
 )
 }
 \arguments{
@@ -36,7 +37,9 @@ rank_barcodes(
 
 \item{threshold}{A boolean (TRUE or FALSE), which indicates if the threshold to be included in the output [default = TRUE]}
 
-\item{plot}{A boolean (TRUE or FALSE), which indicates if a plot should be returned [default = TRUE]}
+\item{plot}{A boolean (TRUE or FALSE), which indicates if a plot should be shown or saved in a file specified by UMIRankPlot [default = TRUE]}
+
+\item{UMIRankPlot}{A string specifying the file name of a PNG image.}
 }
 \value{
 A list or a data frame object that contains ranked barcodes and if chosen a threshold.
